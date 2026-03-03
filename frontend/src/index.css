@@ -1,0 +1,95 @@
+@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
+
+@theme {
+  --color-aviation-black: #020403;
+  --color-aviation-green: #2ee59d;
+  --color-aviation-green-glow: #50fa7b;
+  --color-aviation-slate: #0a0f0d;
+
+  --font-robotic: "Share Tech Mono", "JetBrains Mono", monospace;
+
+  --shadow-hud: 0 0 15px rgba(46, 229, 157, 0.2);
+  --shadow-hud-strong: 0 0 25px rgba(46, 229, 157, 0.4);
+}
+
+@layer base {
+  * {
+    @apply m-0 p-0 box-border;
+  }
+
+  body {
+    @apply bg-[#020403] text-[#2ee59d] font-robotic antialiased uppercase;
+    background-color: #020403;
+    /* Interlace Line Effect */
+    background-image: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.15) 50%);
+    background-size: 100% 4px;
+    margin: 0;
+  }
+}
+
+@layer components {
+  .hud-card {
+    @apply bg-aviation-slate/90 border border-aviation-green/20 p-6 backdrop-blur-xl relative;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5), inset 0 0 40px rgba(46, 229, 157, 0.05);
+  }
+
+  .hud-card::before {
+    content: '';
+    position: absolute;
+    top: -1px;
+    left: -1px;
+    width: 15px;
+    height: 15px;
+    border-top: 2px solid var(--color-aviation-green);
+    border-left: 2px solid var(--color-aviation-green);
+    pointer-events: none;
+  }
+
+  .hud-card::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    right: -1px;
+    width: 15px;
+    height: 15px;
+    border-bottom: 2px solid var(--color-aviation-green);
+    border-right: 2px solid var(--color-aviation-green);
+    pointer-events: none;
+  }
+
+  .hud-button {
+    @apply px-8 py-3 bg-aviation-green/10 border border-aviation-green/50 text-aviation-green font-bold tracking-[0.2em] transition-all hover:bg-aviation-green hover:text-black cursor-pointer;
+    box-shadow: 0 0 10px rgba(46, 229, 157, 0.1);
+  }
+
+  .scanline {
+    background: linear-gradient(to bottom, transparent, transparent 50%, rgba(46, 229, 157, 0.02) 50%, rgba(46, 229, 157, 0.02));
+    background-size: 100% 4px;
+  }
+
+  /* Scanner beam */
+  @keyframes scanner {
+    0% {
+      transform: translateY(-10vh);
+      opacity: 0;
+    }
+
+    5% {
+      opacity: 0.5;
+    }
+
+    95% {
+      opacity: 0.5;
+    }
+
+    100% {
+      transform: translateY(110vh);
+      opacity: 0;
+    }
+  }
+
+  .hud-scanner {
+    animation: scanner 6s linear infinite;
+  }
+}
