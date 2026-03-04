@@ -82,6 +82,30 @@ app.get('/api/weather/:icao', async (req, res) => {
     }
 });
 
+// 4. METAR Text Decoder (Gemini)
+app.post('/api/decode-metar', async (req, res) => {
+    try {
+        const { metarText } = req.body;
+        if (!metarText) return res.status(400).json({ error: "No METAR text provided" });
+
+        const prompt = `Analyze this raw METAR text: "${metarText}". 
+        Provide a detailed analysis in JSON format including airport_icao, wind, visibility, clouds, temp_dew, altimeter, and a user-friendly summary. 
+        Determine the flight category (VFR, MVFR, IFR, LIFR).`;
+
+        const result = await model.generateContent(prompt);
+        const response = await result.response;
+        let text = response.text();
+
+        // Clean JSON formatting
+        text = text.replace(/```json|```/g, "").trim();
+
+        res.json(JSON.parse(text));
+    } catch (error) {
+        console.error("METAR Decoder Error:", error);
+        res.status(500).json({ error: "Failed to decode METAR text" });
+    }
+});
+
 app.listen(port, () => {
     console.log(`SkyLens Intelligence Server running on port ${port}`);
 });

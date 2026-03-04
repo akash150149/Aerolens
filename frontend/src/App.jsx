@@ -7,6 +7,32 @@ function App() {
   const [callsign, setCallsign] = useState('');
   const [chartResponse, setChartResponse] = useState(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [metarInput, setMetarInput] = useState('');
+
+  const handleMetarDecode = async () => {
+    if (!metarInput) return;
+    setIsAnalyzing(true);
+    try {
+      const response = await fetch('http://localhost:5000/api/decode-metar', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ metarText: metarInput }),
+      });
+      const data = await response.json();
+
+      // Map specialized METAR response to AviationCard format
+      setChartResponse({
+        raw_text: metarInput,
+        translated_meaning: data.summary,
+        identified_airport: data.airport_icao,
+        flight_category: data.flight_category
+      });
+    } catch (error) {
+      console.error("Decode Error:", error);
+    } finally {
+      setIsAnalyzing(false);
+    }
+  };
 
   // Mock handlers
   const handleFileUpload = (e) => {
@@ -94,6 +120,28 @@ function App() {
                 </div>
                 <button className="hud-button w-full flex items-center justify-center gap-3">
                   <Database className="w-4 h-4" /> <span>INTERROGATE</span>
+                </button>
+              </div>
+            </div>
+
+            <div className="hud-card">
+              <h2 className="flex items-center gap-3 mb-6 text-sm text-[#50fa7b]">
+                <CloudRain className="w-4 h-4" /> <span>METAR TEXT DECODER</span>
+              </h2>
+              <div className="space-y-4">
+                <div className="relative">
+                  <textarea
+                    placeholder="PASTE RAW METAR (e.g. KLAX 081953Z...)"
+                    className="bg-black/60 border border-[#2ee59d]/20 w-full p-4 text-[#2ee59d] focus:border-[#2ee59d]/60 focus:outline-none transition-all placeholder:opacity-20 uppercase font-robotic text-xs h-28 resize-none"
+                    value={metarInput}
+                    onChange={(e) => setMetarInput(e.target.value.toUpperCase())}
+                  />
+                </div>
+                <button
+                  onClick={handleMetarDecode}
+                  className="hud-button w-full flex items-center justify-center gap-3"
+                >
+                  <Terminal className="w-4 h-4" /> <span>DECODE DATA</span>
                 </button>
               </div>
             </div>
